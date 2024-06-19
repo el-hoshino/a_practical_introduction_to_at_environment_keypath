@@ -25,3 +25,13 @@
     word-wrap: break-word;
     white-space: nowrap;
 }
+
+/* コラムのブロック */
+.column {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    padding: 1rem 2rem;
+    background-color: #d3d3d3;
+    border-radius: 0.5rem;
+}

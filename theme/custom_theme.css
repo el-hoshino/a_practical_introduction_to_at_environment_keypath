@@ -160,11 +160,13 @@ h3 {
 h1 {
   font-size: 2.3rem;
   line-height: 1.2;
+  border-bottom: 1.5px solid #dfe2e5;
 }
 
 h2 {
   font-size: 1.8rem;
   line-height: 1.2;
+  border-bottom: 1px solid #dfe2e5;
 }
 
 h3 {
@@ -216,14 +218,14 @@ pre {
 
 @page {
   size: 210mm 297mm;
-  margin-top: 25mm;
-  margin-bottom: 21mm;
+  margin-top: 15mm; /*5+10*/
+  margin-bottom: 27mm; /*17+10*/
 }
 
 @page :left {
   /* 偶数ページの設定 */
-  margin-left: 30mm;
-  margin-right: 25mm;
+  margin-left: 30mm; /*20+10*/
+  margin-right: 15mm; /*5+10*/
 
   /* 下部のページ数と上部の表示を削除する */
   --vs-page--mbox-content-top-left: "";
@@ -232,8 +234,8 @@ pre {
 
 @page :right {
   /* 奇数ページの設定 */
-  margin-left: 25mm;
-  margin-right: 30mm;
+  margin-left: 15mm; /*5+10*/
+  margin-right: 30mm; /*20+10*/
 
   /* 下部のページ数と上部の表示を削除する */
   --vs-page--mbox-content-top-right: "";

@@ -285,15 +285,27 @@ struct ContentView: View {
 
 ### 敢えてセッターを公開したい
 
-メリットの章に書いた通り、`@Environment`は基本的にゲッターのみ共有されますが、実は見方を変えれば、Closureを「変数」とみなせば、Closureのゲッターを公開することで、実質セッターのみ公開しているようなこともできます。例えばリストから選択されたIndexを、リスト内の各子ビューに設定させたい時、こんな感じで使えます。
+メリットの章に書いた通り、`@Environment`は基本的にゲッターのみ共有されますが、実は見方を変えれば、「セット処理」を「変数」とみなせば、そのセット処理自身のゲッターを公開することで、実質セッターのみ公開しているようなこともできます。
+
+ただし気をつけないといけないのは、「処理」のことを言ったら、「Closure」を思い浮かぶ人が多いかと思いますが、SwiftUIの仕組みの都合で、Closureのような匿名な参照型を使うと無駄なレンダリングが発生する可能性があります。そのため、Swift 5.2から導入された`callAsFunction`を使った`struct`で処理を書きましょう。例えばリストから選択されたIndexを、リスト内の各子ビューに設定させたい時、こんな感じで使えます。
 
 ```swift
+struct SetSelectedIndexAction {
+    private var selectedIndex: Binding<Int?> // ←誤用を防ぐために全てのプロパティーを外部から隠す
+    init(selectedIndex: Binding<Int?>) {
+        self.selectedIndex = selectedIndex
+    }
+    func callAsFunction(_ index: Int) {
+        selectedIndex.wrappedValue = index
+    }
+}
+
 struct SetSelectedIndexKey: EnvironmentKey {
-    static var defaultValue: (Int) -> Void = { _ in }
+    static var defaultValue: SetSelectedIndexAction = .init(selectedIndex: .constant(nil))
 }
 
 extension EnvironmentValues {
-    var setSelectedIndex: (Int) -> Void //...省略
+    var setSelectedIndex: SetSelectedIndexAction //...省略
 }
 
 struct ContentView: View {
@@ -306,7 +318,7 @@ struct ContentView: View {
                     .background(selectedIndex == i ? Color.red : Color.clear)
             }
         }
-        .environment(\.setSelectedIndex, { selectedIndex = $0 })
+        .environment(\.setSelectedIndex, .init(selectedIndex: $selectedIndex))
     }
 }
 
@@ -328,7 +340,7 @@ struct MyCell: View {
 
 <div class="column">
 
-個人的な宣伝になってしまいますが、実はSwiftUIでToastを簡単に表示するライブラリー`Tardiness`を作りました。そのライブラリーの中で、あらゆる画面からToastの文言をセットできるようにするために、このClosure方式の`@Environment`を使いました。もし興味があれば、ぜひこちらのリポジトリーを見てみてください：<https://github.com/el-hoshino/Tardiness>。
+個人的な宣伝になってしまいますが、実はSwiftUIでToastを簡単に表示するライブラリー`Tardiness`を作りました。そのライブラリーの中で、あらゆる画面からToastの文言をセットできるようにするために、この`callAsFunction`方式の`@Environment`を使いました。もし興味があれば、ぜひこちらのリポジトリーを見てみてください：<https://github.com/el-hoshino/Tardiness>。
 
 </div>
 

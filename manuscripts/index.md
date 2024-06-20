@@ -4,7 +4,7 @@
 星野恵瑠<br />
 Twitter: @lovee<br />
 Bluesky: @lovee.bsky.social<br />
-Misskey: @@lovee@misskey.io<br />
+Misskey: @lovee@misskey.io<br />
 GitHub: @el-hoshino
 </div>
 
@@ -264,7 +264,7 @@ struct CountView: View {
 
 ### KeyPathの連結
 
-`@Environment`はKeyPathを受け取るってことは、当然ながらKeyPathを連結したKeyPathも使えるわけです。これは複雑な状態の塊から、必要な部分だけを取り出したいときに非常に便利です。例えば`CGRect`の環境変数があって、その中の`midX`だけを使いたい時と考えましょう。もしこの連結を知らなかったら、こんな風に書いてるではないかと思います：
+`@Environment`はKeyPathを受け取るってことは、当然ながらKeyPathを連結したKeyPathも使えるわけです。これは複雑な状態の塊から、必要な部分だけを取り出したいときに非常に便利です。例えば`CGRect`の環境変数があって、その中の`midX`だけを使いたい時と考えましょう。もしこの連結を知らなかったら、こんな風に書いているのではないかと思います：
 
 ```swift
 struct ContentView: View {
@@ -328,7 +328,7 @@ struct MyCell: View {
 
 <div class="column">
 
-個人的な宣伝になってしまいますが、実はSwiftUIでToastを簡単に表示するライブラリーを作りました。そのライブラリーの中で、あらゆる画面からToastの文言をセットできるようにするために、このClosure方式の`@Environment`を使いました。もし興味があれば、ぜひ筆者のGitHubで`Tardiness`を検索してみてください。
+個人的な宣伝になってしまいますが、実はSwiftUIでToastを簡単に表示するライブラリー`Tardiness`を作りました。そのライブラリーの中で、あらゆる画面からToastの文言をセットできるようにするために、このClosure方式の`@Environment`を使いました。もし興味があれば、ぜひこちらのリポジトリーを見てみてください：<https://github.com/el-hoshino/Tardiness>。
 
 </div>
 

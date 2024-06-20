@@ -283,67 +283,6 @@ struct ContentView: View {
 }
 ```
 
-### 敢えてSetterを公開したい
-
-メリットの章に書いた通り、`@Environment`は基本的にGetterのみ共有されますが、実は見方を変えれば、「セット処理」を「変数」とみなせば、そのセット処理自身のGetterを公開することで、実質的にSetterのみ公開しているようなこともできます。
-
-ただし気をつけないといけないのは、「処理」のことを言ったら、「Closure」を思い浮かぶ人が多いかと思いますが、SwiftUIの仕組みの都合で、Closureのような匿名な参照型を使うと無駄なレンダリングが発生する可能性があります。そのため、Swift 5.2から導入されたCallable structで処理を書きましょう。例えばリストから選択されたIndexを、リスト内の各子ビューに設定させたい時、こんな感じで使えます。
-
-```swift
-struct SetSelectedIndexAction {
-    private var selectedIndex: Binding<Int?> // ←誤用を防ぐために全てのプロパティーを外部から隠す
-    init(selectedIndex: Binding<Int?>) {
-        self.selectedIndex = selectedIndex
-    }
-    func callAsFunction(_ index: Int) { // ←これで`SetSelectedIndexAction`を関数のように呼べる
-        selectedIndex.wrappedValue = index
-    }
-}
-
-struct SetSelectedIndexKey: EnvironmentKey {
-    static var defaultValue: SetSelectedIndexAction = .init(selectedIndex: .constant(nil))
-}
-
-extension EnvironmentValues {
-    var setSelectedIndex: SetSelectedIndexAction //...省略
-}
-
-struct ContentView: View {
-    @State private var selectedIndex: Int?
-
-    var body: some View {
-        VStack {
-            ForEach(0..<10) { i in
-                MyCell(index: i)
-                    .background(selectedIndex == i ? Color.red : Color.clear)
-            }
-        }
-        .environment(\.setSelectedIndex, .init(selectedIndex: $selectedIndex))
-    }
-}
-
-struct MyCell: View {
-    var index: Int
-    @Environment(\.setSelectedIndex) var setSelectedIndex: SetSelectedIndexAction
-
-    var body: some View {
-        Button("Select") {
-            setSelectedIndex(index)
-        }
-    }
-}
-```
-
-上記の例では、リスト内の子ビュー`MyCell`は、実際に`selectedIndex`の値を知りませんが、`setSelectedIndex`を使って`selectedIndex`を変更することができます。これにより、`ContentView`が持つ`selectedIndex`の値を、`MyCell`が変更できるようになります。
-
-もちろん現実では`selectedIndex`の設定は他にいくらでもやり方はありますし、そもそもアプリの設計としてこれはあまりいい例として言いにくいです。これはあくまで使い方の例として、イメージしやすいように書いたものですが、これで`@Environment`の使い方の幅が広がることを感じていただければ幸いです。また他に、Callable structの代わりに`Binding`を使うことで、実質GetterとSetter両方公開するようなこともできます。
-
-<div class="column">
-
-個人的な宣伝になってしまいますが、実はSwiftUIでToastを簡単に表示するライブラリー`Tardiness`を作りました。そのライブラリーの中で、あらゆる画面からToastの文言をセットできるようにするために、この`callAsFunction`方式の`@Environment`を使いました。もし興味があれば、ぜひこちらのリポジトリーを見てみてください：<https://github.com/el-hoshino/Tardiness>。
-
-</div>
-
 ### 同じ環境変数にビューヒエラルキーに応じて違う値を混在させる
 
 `@Environment`を使えば、状態を環境変数としてアプリ全体に共有することになるから、アプリ全体が一つだけの状態を共有することになると思うかもしれませんが、実は違います。`@Environment`の状態はビューヒエラルキーで継承されており、すなわち途中で書き換えれば、そのビューヒエラルキー以下のビューにだけその書き換わった値が適用されるということです。
@@ -413,6 +352,67 @@ el-hoshino
             }
         }
 ```
+
+</div>
+
+### 敢えてSetterを公開したい
+
+メリットの章に書いた通り、`@Environment`は基本的にGetterのみ共有されますが、実は見方を変えれば、「セット処理」を「変数」とみなせば、そのセット処理自身のGetterを公開することで、実質的にSetterのみ公開しているようなこともできます。
+
+ただし気をつけないといけないのは、「処理」のことを言ったら、「Closure」を思い浮かぶ人が多いかと思いますが、SwiftUIの仕組みの都合で、Closureのような匿名な参照型を使うと無駄なレンダリングが発生する可能性があります。そのため、Swift 5.2から導入されたCallable structで処理を書きましょう。例えばリストから選択されたIndexを、リスト内の各子ビューに設定させたい時、こんな感じで使えます。
+
+```swift
+struct SetSelectedIndexAction {
+    private var selectedIndex: Binding<Int?> // ←誤用を防ぐために全てのプロパティーを外部から隠す
+    init(selectedIndex: Binding<Int?>) {
+        self.selectedIndex = selectedIndex
+    }
+    func callAsFunction(_ index: Int) { // ←これで`SetSelectedIndexAction`を関数のように呼べる
+        selectedIndex.wrappedValue = index
+    }
+}
+
+struct SetSelectedIndexKey: EnvironmentKey {
+    static var defaultValue: SetSelectedIndexAction = .init(selectedIndex: .constant(nil))
+}
+
+extension EnvironmentValues {
+    var setSelectedIndex: SetSelectedIndexAction //...省略
+}
+
+struct ContentView: View {
+    @State private var selectedIndex: Int?
+
+    var body: some View {
+        VStack {
+            ForEach(0..<10) { i in
+                MyCell(index: i)
+                    .background(selectedIndex == i ? Color.red : Color.clear)
+            }
+        }
+        .environment(\.setSelectedIndex, .init(selectedIndex: $selectedIndex))
+    }
+}
+
+struct MyCell: View {
+    var index: Int
+    @Environment(\.setSelectedIndex) var setSelectedIndex: SetSelectedIndexAction
+
+    var body: some View {
+        Button("Select") {
+            setSelectedIndex(index)
+        }
+    }
+}
+```
+
+上記の例では、リスト内の子ビュー`MyCell`は、実際に`selectedIndex`の値を知りませんが、`setSelectedIndex`を使って`selectedIndex`を変更することができます。これにより、`ContentView`が持つ`selectedIndex`の値を、`MyCell`が変更できるようになります。
+
+もちろん現実では`selectedIndex`の設定は他にいくらでもやり方はありますし、そもそもアプリの設計としてこれはあまりいい例として言いにくいです。これはあくまで使い方の例として、イメージしやすいように書いたものですが、これで`@Environment`の使い方の幅が広がることを感じていただければ幸いです。また他に、Callable structの代わりに`Binding`を使うことで、実質GetterとSetter両方公開するようなこともできます。
+
+<div class="column">
+
+個人的な宣伝になってしまいますが、実はSwiftUIでToastを簡単に表示するライブラリー`Tardiness`を作りました。そのライブラリーの中で、あらゆる画面からToastの文言をセットできるようにするために、この`callAsFunction`方式の`@Environment`を使いました。もし興味があれば、ぜひこちらのリポジトリーを見てみてください：<https://github.com/el-hoshino/Tardiness>。
 
 </div>
 

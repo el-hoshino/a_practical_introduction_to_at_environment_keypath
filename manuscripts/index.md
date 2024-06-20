@@ -402,6 +402,20 @@ el-hoshino
 
 このように、ビューヒエラルキーに応じて違う値を混在させることができるのが`@Environment`の特性です。この特性を活かせば、幅広い表現ができるでしょう。例えば特定のビューヒエラルキーにだけダークモードだけ有効にしたい時、そのビューに`.environment(\.colorScheme, .dark)`をセットすれば実現できます。
 
+<div class="column">
+
+実はこの`.environment(_:_:)`の他に、`.transformEnvironment(_:transform:)`というModifierもあります。このModifierを使うと、`transform`引数は環境変数を変換するクロージャーを受け取るので、より高度な環境変数の設定ができます。例えば特定の条件でのみ`\.colorScheme`を変更したい時、このModifierを使うと便利です。
+
+```swift
+        .transformEnvironment(\.colorScheme) { colorScheme in
+            if someCondition {
+                colorScheme = .dark
+            }
+        }
+```
+
+</div>
+
 ## あとがき
 
 いかがでしたでしょうか。`@Environment`を活用すると、いろんなことが楽にできることを感じていただけたかと思います。最後に、この記事が敢えて`\.keyPath`の方だけ取り上げる理由を少し説明したいと思います。

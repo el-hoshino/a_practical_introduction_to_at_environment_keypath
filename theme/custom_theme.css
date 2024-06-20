@@ -218,14 +218,14 @@ pre {
 
 @page {
   size: 210mm 297mm;
-  margin-top: 15mm; /*5+10*/
-  margin-bottom: 27mm; /*17+10*/
+  margin-top: 10mm; /*5+5*/
+  margin-bottom: 22mm; /*17+5*/
 }
 
 @page :left {
   /* 偶数ページの設定 */
-  margin-left: 30mm; /*20+10*/
-  margin-right: 15mm; /*5+10*/
+  margin-left: 25mm; /*20+5*/
+  margin-right: 10mm; /*5+5*/
 
   /* 下部のページ数と上部の表示を削除する */
   --vs-page--mbox-content-top-left: "";
@@ -234,8 +234,8 @@ pre {
 
 @page :right {
   /* 奇数ページの設定 */
-  margin-left: 15mm; /*5+10*/
-  margin-right: 30mm; /*20+10*/
+  margin-left: 10mm; /*5+5*/
+  margin-right: 25mm; /*20+5*/
 
   /* 下部のページ数と上部の表示を削除する */
   --vs-page--mbox-content-top-right: "";
